@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estructuración de Deuda y Amortización Lineal - Portal Corporativo</title>
+
+    <!-- Tailwind CSS CDN sincronizado con la paleta ejecutiva del Portal Corporativo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bbva: {
+                            navy: '#070E46',
+                            blue: '#001391',
+                            medium: '#1464A5',
+                            serene: '#85C8FF',
+                            teal: '#0F5C6E',
+                            slate: '#1B365D',
+                            lightBg: '#F4F6F9',
+                            cardBg: '#FFFFFF',
+                            calcBg: '#EBF1F8',
+                            border: '#D5DFEC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 para alertas ejecutivas -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- ExcelJS y html2pdf para exportación nativa -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        /* ==========================================================================
+           SISTEMA DE DISEÑO EJECUTIVO HOMOLOGADO CON AMORTIZACIÓN CONSOLIDADA / AFE
+           ========================================================================== */
+        .ct-master-wrap {
+            --bbva-sand: #F4F6F9;
+            --bbva-serene: #85C8FF;
+            --bbva-electric: #001391;
+            --bbva-midnight: #070E46;
+            --bbva-white: #FFFFFF;
+
+            --ct-slate-teal: #0F5C6E;
+            --ct-indigo-slate: #1B365D;
+            --ct-medium-blue: #1464A5;
+            --ct-amber-corp: #B45309;
+
+            --bbva-gray-100: #E6ECF2;
+            --bbva-gray-200: #D0D9E4;
+            --bbva-gray-600: #4A5568;
+
+            --bbva-accent-yellow: #FFE761;
+            --bbva-accent-aqua: #8CE8EA;
+
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--bbva-midnight);
+            background-color: var(--bbva-sand);
+            line-height: 1.6;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #F4F6F9;
+            color: #070E46;
+            font-family: Arial, Helvetica, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .ct-container {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        /* Bandas alternadas con respiración visual */
+        .ct-band-white {
+            background-color: var(--bbva-white);
+            padding: 50px 0;
+            border-bottom: 1px solid var(--bbva-gray-100);
+        }
+
+        .ct-band-sand {
+            background-color: var(--bbva-sand);
+            padding: 50px 0;
+            border-bottom: 1px solid var(--bbva-gray-100);
+        }
+
+        /* Tipografía Georgia Institucional */
+        .ct-serif {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 700;
+            line-height: 1.12;
+            color: var(--bbva-midnight);
+        }
+
+        .ct-serif-electric {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 700;
+            line-height: 1.12;
+            color: var(--bbva-electric);
+        }
+
+        .ct-serif-large {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 700;
+            line-height: 0.98;
+        }
+
+        /* Etiqueta superior de sección */
+        .ct-step-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #EEF4FF;
+            color: var(--bbva-electric);
+            border: 1px solid rgba(0, 19, 145, 0.14);
+            padding: 4px 13px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        /* Hero Banner Corporativo */
+        .ct-hero-banner {
+            position: relative;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 24px;
+            background-color: var(--bbva-midnight);
+            background-image:
+                linear-gradient(180deg, rgba(7, 14, 70, 0.72) 0%, rgba(0, 19, 145, 0.60) 100%),
+                url('fondo4.jpg');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 4px solid var(--bbva-serene);
+        }
+
+        .ct-hero-title {
+            position: relative;
+            z-index: 2;
+            color: #F7F8F8;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 700;
+            font-size: clamp(2.1rem, 4.3vw, 3.45rem);
+            line-height: 1.04;
+            margin: 0;
+            text-shadow: 0 4px 18px rgba(7, 14, 70, 0.5);
+        }
+
+        .ct-hero-sub {
+            position: relative;
+            z-index: 2;
+            color: #CFE6FF;
+            font-size: 0.95rem;
+            margin: 14px 0 0;
+            max-width: 740px;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+        }
+
+        /* Barra Superior Pegajosa */
+        .ct-top-pillbar {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--bbva-gray-100);
+            padding: 13px 0;
+            box-shadow: 0 4px 20px rgba(7, 14, 70, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+
+        .ct-top-pillbar-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ==========================================================================
+           LAYOUT DE 2 COLUMNAS CON VIDEO CORPORATIVO GRANDE
+           ========================================================================== */
+        .ct-split-layout {
+            display: grid;
+            grid-template-columns: 0.88fr 1.12fr;
+            gap: 44px;
+            align-items: center;
+        }
+
+        .ct-split-video-stage {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 18px;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .ct-split-video-stage:hover {
+            transform: scale(1.015);
+        }
+
+        .ct-split-video {
+            width: 100%;
+            max-width: 465px;
+            height: auto;
+            display: block;
+            border: none;
+            outline: none;
+            border-radius: 14px;
+            background-color: #FFFFFF;
+            mix-blend-mode: multiply;
+            filter: brightness(1.08) contrast(1.06) saturate(1.04);
+            -webkit-mask-image: radial-gradient(ellipse 84% 82% at 50% 50%, #000 65%, transparent 99%);
+            mask-image: radial-gradient(ellipse 84% 82% at 50% 50%, #000 65%, transparent 99%);
+            pointer-events: none;
+        }
+
+        /* ==========================================================================
+           BOTONES PÍLDORA EJECUTIVOS CON DESTELLO SUTIL (SHINE)
+           ========================================================================== */
+        .ct-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 0.80rem;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 50px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.26s ease, box-shadow 0.26s ease, background-color 0.26s ease, border-color 0.26s ease;
+            z-index: 1;
+            white-space: nowrap;
+        }
+
+        .ct-btn-soft {
+            background-color: #F4F8FD;
+            color: var(--bbva-electric);
+            border: 1.5px solid #B8D8FA;
+        }
+
+        .ct-btn-soft:hover:not(:disabled) {
+            background-color: var(--bbva-electric);
+            color: #FFFFFF;
+            border-color: var(--bbva-electric);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 19, 145, 0.18);
+        }
+
+        .ct-btn-royal {
+            background-color: var(--bbva-electric);
+            color: #F7F8F8;
+            border: 1px solid var(--bbva-electric);
+            box-shadow: 0 4px 12px rgba(0, 19, 145, 0.18);
+        }
+
+        .ct-btn-royal:hover:not(:disabled) {
+            background-color: var(--bbva-midnight);
+            border-color: var(--bbva-midnight);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(7, 14, 70, 0.28);
+        }
+
+        .ct-btn-emerald {
+            background: linear-gradient(135deg, #0F5C6E 0%, #0A4352 100%);
+            color: #FFFFFF;
+            border: 1px solid #0F5C6E;
+            box-shadow: 0 4px 12px rgba(15, 92, 110, 0.20);
+        }
+
+        .ct-btn-emerald:hover:not(:disabled) {
+            background: linear-gradient(135deg, #070E46 0%, #0F5C6E 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(15, 92, 110, 0.30);
+        }
+
+        .ct-btn-pdf {
+            background: linear-gradient(135deg, #991B1B 0%, #7F1D1D 100%);
+            color: #FFFFFF;
+            border: 1px solid #991B1B;
+            box-shadow: 0 4px 12px rgba(153, 27, 27, 0.20);
+        }
+
+        .ct-btn-pdf:hover:not(:disabled) {
+            background: linear-gradient(135deg, #7F1D1D 0%, #450A0A 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(153, 27, 27, 0.28);
+        }
+
+        .ct-btn-glow-special {
+            background: linear-gradient(135deg, var(--bbva-electric) 0%, var(--bbva-midnight) 100%);
+            color: #F7F8F8 !important;
+            border: 1.5px solid var(--bbva-accent-aqua);
+            box-shadow: 0 0 16px rgba(140, 232, 234, 0.55), 0 4px 14px rgba(0, 19, 145, 0.30);
+            animation: ct-glow-pulse 2.8s infinite ease-in-out;
+        }
+
+        .ct-btn-glow-special i {
+            color: var(--bbva-accent-yellow);
+        }
+
+        .ct-btn-glow-special:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.02);
+            border-color: var(--bbva-accent-yellow);
+            box-shadow: 0 0 24px rgba(255, 231, 97, 0.75), 0 8px 22px rgba(0, 19, 145, 0.45);
+        }
+
+        @keyframes ct-glow-pulse {
+            0%, 100% { box-shadow: 0 0 12px rgba(140, 232, 234, 0.45), 0 4px 12px rgba(0, 19, 145, 0.25); }
+            50% { box-shadow: 0 0 22px rgba(133, 200, 255, 0.80), 0 6px 18px rgba(0, 19, 145, 0.42); }
+        }
+
+        .ct-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -130%;
+            width: 65%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.48), transparent);
+            transform: skewX(-25deg);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .ct-btn:hover:not(:disabled)::before {
+            animation: ct-shine-hover 0.75s ease-in-out;
+        }
+
+        @keyframes ct-shine-hover {
+            0% { left: -130%; }
+            100% { left: 160%; }
+        }
+
+        /* ==========================================================================
+           TARJETAS EJECUTIVAS, KPIS E INPUTS CON ÍCONO
+           ========================================================================== */
+        .ct-afe-card {
+            background: var(--bbva-white);
+            border: 1px solid var(--bbva-gray-100);
+            border-top: 5px solid var(--bbva-electric);
+            border-radius: 20px;
+            padding: 34px 36px;
+            box-shadow: 0 12px 34px rgba(7, 14, 70, 0.06);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .ct-card-header-flex {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .ct-card-illus {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            flex-shrink: 0;
+            filter: drop-shadow(0 6px 12px rgba(7, 14, 70, 0.14));
+            transition: transform 0.35s ease;
+        }
+
+        .ct-afe-card:hover .ct-card-illus {
+            transform: scale(1.06) translateY(-2px);
+        }
+
+        .ct-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .ct-kpi-card {
+            background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFD 100%);
+            border: 1.5px solid #DCE5F0;
+            border-left: 5px solid var(--bbva-electric);
+            border-radius: 16px;
+            padding: 16px 18px;
+            box-shadow: 0 5px 16px rgba(7, 14, 70, 0.04);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .ct-kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(0, 19, 145, 0.08);
+        }
+
+        .ct-kpi-label {
+            font-size: 0.69rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #5A677D;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .ct-kpi-value {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--bbva-midnight);
+            font-variant-numeric: tabular-nums;
+            line-height: 1.2;
+        }
+
+        .ct-kpi-sub {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #4A5568;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Inputs limpios con íconos */
+        .ct-field-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--bbva-midnight);
+            margin-bottom: 5px;
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-icon-wrapper i {
+            position: absolute;
+            left: 14px;
+            color: var(--bbva-electric);
+            font-size: 0.86rem;
+            pointer-events: none;
+            z-index: 10;
+            width: 18px;
+            text-align: center;
+            opacity: 0.82;
+        }
+
+        .input-user-icon {
+            width: 100%;
+            padding: 10px 13px 10px 38px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #070E46;
+            background-color: #F7FAFF;
+            border: 1.5px solid #C4D7F2;
+            border-radius: 11px;
+            font-variant-numeric: tabular-nums;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input-user-icon:focus {
+            background-color: #FFFFFF;
+            border-color: #001391;
+            box-shadow: 0 0 0 3px rgba(0, 19, 145, 0.12);
+        }
+
+        /* ==========================================================================
+           TABLA EJECUTIVA DE 11 COLUMNAS CON ENCABEZADO FIJO
+           ========================================================================== */
+        .custom-table-container {
+            max-height: 620px;
+            overflow-y: auto;
+            overflow-x: auto;
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid #D8E1EC;
+            background: #FFFFFF;
+            box-shadow: 0 4px 16px rgba(7, 14, 70, 0.03);
+        }
+
+        .custom-table-container::-webkit-scrollbar { width: 7px; height: 7px; }
+        .custom-table-container::-webkit-scrollbar-track { background: #F1F5F9; border-radius: 6px; }
+        .custom-table-container::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 6px; }
+        .custom-table-container::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+        .table-m {
+            width: 100%;
+            min-width: 1120px;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.78rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .table-m th {
+            position: sticky;
+            top: 0;
+            background: #070E46;
+            color: #FFFFFF;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 12px 10px;
+            border-bottom: 2px solid #85C8FF;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .table-m td {
+            padding: 9px 10px;
+            border-bottom: 1px solid #E8EEF5;
+            white-space: nowrap;
+            color: #1E293B;
+            background-color: #FFFFFF;
+            transition: background-color 0.15s ease;
+        }
+
+        .table-m tbody tr:nth-child(even) td {
+            background-color: #FAFBFD;
+        }
+
+        .table-m tbody tr:hover td {
+            background-color: #EFF6FF !important;
+        }
+
+        .table-m tr.row-disposition td {
+            background-color: #EBF8F5 !important;
+            border-bottom: 1.5px solid #99DCD6;
+            font-weight: 800;
+        }
+
+        /* ==========================================================================
+           PLANTILLA DE EXPORTACIÓN A PDF EJECUTIVO
+           ========================================================================== */
+        #pdfPlantilla {
+            display: none;
+            background: #ffffff !important;
+            color: #070E46 !important;
+            font-family: Arial, sans-serif !important;
+            padding: 20px;
+        }
+
+        .pdf-header {
+            border-bottom: 2px solid #001391;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pdf-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #070E46;
+            font-family: Georgia, serif;
+        }
+
+        .pdf-subtitle {
+            font-size: 11px;
+            color: #1464A5;
+            margin-top: 2px;
+        }
+
+        .pdf-params {
+            width: 100%;
+            margin-bottom: 15px;
+            border-collapse: collapse;
+        }
+
+        .pdf-params th {
+            background-color: #070E46;
+            color: #ffffff;
+            font-size: 9px;
+            padding: 6px;
+            text-align: left;
+        }
+
+        .pdf-params td {
+            border: 1px solid #cbd5e1;
+            font-size: 9px;
+            padding: 4px 6px;
+            color: #070E46;
+        }
+
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+        }
+
+        .pdf-table th {
+            background-color: #001391 !important;
+            color: #ffffff !important;
+            padding: 6px 3px;
+            border: 1px solid #001391;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .pdf-table td {
+            padding: 4px 3px;
+            border: 1px solid #cbd5e1;
+            text-align: center;
+            color: #1e293b;
+        }
+
+        .pdf-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .pdf-table tr.row-disposition {
+            background-color: #e6f4ea !important;
+            font-weight: bold;
+        }
+
+        /* Animación Scroll Reveal */
+        .ct-reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .ct-reveal.ct-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+            .ct-split-layout {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+            .ct-kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .ct-top-pillbar-inner {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .ct-kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .ct-afe-card {
+                padding: 22px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="ct-master-wrap">
+
+    <!-- ================= HERO BANNER CORPORATIVO ================= -->
+    <header class="ct-hero-banner">
+        <h1 class="ct-hero-title ct-serif-large">Estructuración de Deuda:<br>Amortización Lineal</h1>
+        <p class="ct-hero-sub">Simulador financiero parametrizado con periodos de gracia en meses, cálculo exacto de intereses por días de corte y exportación ejecutiva</p>
+    </header>
+
+    <!-- ================= BARRA SUPERIOR PEGAJOSA DE NAVEGACIÓN Y ACCIONES ================= -->
+    <nav class="ct-top-pillbar">
+        <div class="ct-container ct-top-pillbar-inner">
+            <div class="flex flex-wrap items-center gap-2.5">
+                <span class="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#EEF4FF] border border-[#C4D7F2] text-xs font-extrabold text-[#001391]">
+                    <i class="fas fa-chart-line"></i> Esquema de Capital Lineal
+                </span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button type="button" onclick="exportarExcel()" class="ct-btn ct-btn-emerald text-xs">
+                    <i class="fas fa-file-excel"></i> Excel (.xlsx)
+                </button>
+                <button type="button" onclick="exportarPDF()" class="ct-btn ct-btn-pdf text-xs">
+                    <i class="fas fa-file-pdf"></i> Reporte PDF
+                </button>
+                <button type="button" onclick="abrirGoogleSheets()" class="ct-btn ct-btn-soft text-xs">
+                    <i class="fas fa-table"></i> Google Sheets
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==========================================================================
+         BANDA 1 (FONDO BLANCO): VIDEO CORPORATIVO GRANDE + PARÁMETROS DE LA DEUDA
+         ========================================================================== -->
+    <section id="seccion-parametros-lineal" class="ct-band-white">
+        <div class="ct-container">
+            <div class="ct-split-layout ct-reveal">
+
+                <!-- COLUMNA IZQUIERDA: VIDEO CORPORATIVO INTEGRADO -->
+                <div class="ct-split-video-stage">
+                    <video class="ct-split-video" src="crear.mp4" autoplay loop muted playsinline></video>
+                </div>
+
+                <!-- COLUMNA DERECHA: CAPTURA DE PARÁMETROS FINANCIEROS -->
+                <div>
+                    <div class="ct-card-header-flex mb-3">
+                        <img src="https://assets.bbvaexperience.com/spherica/visual/microillustrations/rule-glass.png" alt="Parámetros de la Deuda" class="ct-card-illus">
+                        <div>
+                            <span class="ct-step-eyebrow mb-1">
+                                <i class="fas fa-sliders"></i> Supuesto Financiero • Modelo M
+                            </span>
+                            <h2 class="ct-serif-electric text-2xl md:text-3xl m-0">
+                                Parámetros de Estructuración Lineal
+                            </h2>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 m-0 mb-5">
+                        Ajuste el monto objetivo, plazo, periodicidad de capital e intereses, meses de gracia y pago balloon; la corrida mensual y la vida media se actualizan automáticamente.
+                    </p>
+
+                    <div class="bg-slate-50/85 border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="paramFechaInicial" class="ct-field-label">Fecha Inicial de Disposición</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <input type="date" id="paramFechaInicial" value="2026-08-01" onchange="calcularTablaAmortizacion()" class="input-user-icon">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="paramDeudaObjetivo" class="ct-field-label">Deuda Objetivo ($ / Miles USD o MN)</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <input type="number" id="paramDeudaObjetivo" value="200000" oninput="calcularTablaAmortizacion()" class="input-user-icon text-[#001391] font-extrabold">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label for="paramPlazoAnos" class="ct-field-label">Plazo Total (Años)</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    <input type="number" step="0.5" id="paramPlazoAnos" value="5.0" oninput="calcularTablaAmortizacion()" class="input-user-icon">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="paramPeriodoAmort" class="ct-field-label">Periodo Amort. (Meses)</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="fas fa-rotate"></i>
+                                    <input type="number" step="1" min="1" id="paramPeriodoAmort" value="1" oninput="calcularTablaAmortizacion()" class="input-user-icon">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="paramPeriodosGracia" class="ct-field-label">Gracia de Capital (Meses)</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="fas fa-pause-circle"></i>
+                                    <input type="number" min="0" id="paramPeriodosGracia" value="12" oninput="calcularTablaAmortizacion()" class="input-user-icon">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label for="paramTasaInteres" class="ct-field-label">Tasa Interés Anual (%)</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="fas fa-percent"></i>
+                                    <input type="number" step="0.1" id="paramTasaInteres" value="10.0" oninput="calcularTablaAmortizacion()" class="input-user-icon text-[#B45309] font-extrabold">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="paramPagoIntereses" class="ct-field-label">Pago de Intereses (Meses)</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <input type="number" step="1" min="1" id="paramPagoIntereses" value="1" oninput="calcularTablaAmortizacion()" class="input-user-icon">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="paramBalloonPayment" class="ct-field-label">Balloon Payment (%)</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="fas fa-bullseye"></i>
+                                    <input type="number" step="1" min="0" max="100" id="paramBalloonPayment" value="0" oninput="calcularTablaAmortizacion()" class="input-user-icon">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- RECUADRO DE VIDA MEDIA RESULTANTE DEBAJO DE LOS PARÁMETROS (COMO EN EL ORIGINAL) -->
+                    <div class="mt-4 p-4 rounded-2xl bg-gradient-to-r from-[#EEF4FF] to-[#F8FAFD] border-2 border-[#B8D8FA] flex items-center justify-between gap-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#001391] text-white flex items-center justify-center shrink-0 shadow-sm">
+                                <i class="fas fa-hourglass-half text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="text-[0.72rem] uppercase tracking-wider text-[#001391] font-extrabold block leading-tight">Vida Media Resultante</span>
+                                <span class="text-xs text-slate-500 font-semibold">Calculada dinámicamente</span>
+                            </div>
+                        </div>
+                        <div id="kpiVidaMedia" class="text-2xl font-extrabold text-[#070E46] bg-white px-4 py-1.5 rounded-xl border border-[#99C2FF] shadow-sm" style="font-variant-numeric: tabular-nums;">
+                            0.00
+                        </div>
+                    </div>
+
+                    <!-- BOTÓN CALCULAR MODELO DEBAJO DE VIDA MEDIA -->
+                    <div class="mt-4">
+                        <button type="button" onclick="calcularYDesplazar()" class="ct-btn ct-btn-glow-special w-full py-3.5 text-xs uppercase tracking-wider">
+                            <i class="fas fa-calculator"></i> Calcular Modelo
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         BANDA 2 (FONDO ARENA SUAVE): INDICADORES CLAVE Y CALENDARIO DE AMORTIZACIÓN
+         ========================================================================== -->
+    <section id="seccion-calendario-lineal" class="ct-band-sand">
+        <div class="ct-container">
+
+            <!-- TARJETA PRINCIPAL DE LA TABLA DE AMORTIZACIÓN LINEAL -->
+            <div class="ct-afe-card ct-reveal">
+
+                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-5 pb-4 border-b border-slate-200">
+                    <div class="ct-card-header-flex">
+                        <img src="https://assets.bbvaexperience.com/spherica/visual/microillustrations/analyze-doc-glass.png" alt="Calendario Lineal" class="ct-card-illus">
+                        <div>
+                            <span class="ct-step-eyebrow mb-1">
+                                <i class="fas fa-calendar-days"></i> Proyección Mensual Detallada
+                            </span>
+                            <h2 class="ct-serif-electric text-xl md:text-2xl m-0">
+                                Calendario de Amortización Lineal
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-1 m-0">
+                                Estructura cronológica con fechas (DD/MM/AAAA), fracción de año e intereses exactos según los días del mes de corte.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                        <button type="button" onclick="exportarExcel()" class="ct-btn ct-btn-emerald text-xs py-2.5 px-4">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                        <button type="button" onclick="exportarPDF()" class="ct-btn ct-btn-pdf text-xs py-2.5 px-4">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button type="button" onclick="abrirGoogleSheets()" class="ct-btn ct-btn-soft text-xs py-2.5 px-4">
+                            <i class="fas fa-up-right-from-square"></i> Google Sheets
+                        </button>
+                        <button type="button" onclick="notificarCalculo()" class="ct-btn ct-btn-royal text-xs py-2.5 px-5">
+                            <i class="fas fa-circle-check"></i> Confirmar Datos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR CON SCROLL Y ENCABEZADO PEGAJOSO -->
+                <div class="custom-table-container">
+                    <table class="table-m text-center">
+                        <thead>
+                            <tr>
+                                <th class="w-[7%]"># Mes</th>
+                                <th class="w-[8%]">Fac Año</th>
+                                <th class="w-[7%]">Año P.</th>
+                                <th class="w-[10%]">Fecha (DD/MM/AAAA)</th>
+                                <th class="w-[6%]">Año</th>
+                                <th class="w-[11%] text-right">Saldo Inicial</th>
+                                <th class="w-[11%] text-right" style="color:#8CE8EA;">Disposición Mn</th>
+                                <th class="w-[11%] text-right" style="color:#85C8FF;">Amortización ($)</th>
+                                <th class="w-[10%] text-right" style="color:#FFE761;">Interés ($)</th>
+                                <th class="w-[8%] text-right">Amortización (%)</th>
+                                <th class="w-[11%] text-right">Saldo Final</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyAmortizacion">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PIE DE RESUMEN DE LA TABLA -->
+                <div class="mt-5 p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap justify-between items-center text-xs gap-3">
+                    <span id="labelTotalFilas" class="font-bold text-slate-600">Filas calculadas: 0</span>
+                    <span id="totalAmortizadoLabel" class="text-[#001391] font-extrabold">Total Amortizado: $0.00</span>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+</div><!-- /.ct-master-wrap -->
+
+<!-- ==========================================================================
+     PLANTILLA OCULTA PARA EXPORTACIÓN A PDF EJECUTIVO (HTML2PDF)
+     ========================================================================== -->
+<div id="pdfPlantilla">
+    <div class="pdf-header">
+        <div>
+            <div class="pdf-title">Informe de Estructuración de Deuda</div>
+            <div class="pdf-subtitle">Amortización Lineal y Proyección Financiera</div>
+        </div>
+        <div style="text-align: right; font-size: 10px; color: #475569;">
+            <div><b>Fecha:</b> <span id="pdfFechaEmision"></span></div>
+            <div>Modelo M - Informe Ejecutivo</div>
+        </div>
+    </div>
+
+    <table class="pdf-params">
+        <thead>
+            <tr>
+                <th colspan="4">PARÁMETROS FINANCIEROS DEL CRÉDITO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="width: 25%;"><b>Deuda Objetivo:</b></td>
+                <td style="width: 25%;" id="pdfValDeuda">$0.00</td>
+                <td style="width: 25%;"><b>Periodo Amortización:</b></td>
+                <td style="width: 25%;" id="pdfValPeriodo">1 Mes</td>
+            </tr>
+            <tr>
+                <td><b>Plazo Años:</b></td>
+                <td id="pdfValPlazo">0.0</td>
+                <td><b>Meses Gracia:</b></td>
+                <td id="pdfValGracia">0</td>
+            </tr>
+            <tr>
+                <td><b>Tasa Interés Anual:</b></td>
+                <td id="pdfValTasa">0.0%</td>
+                <td><b>Balloon Payment:</b></td>
+                <td id="pdfValBalloon">0.0%</td>
+            </tr>
+            <tr>
+                <td><b>Vida Media Resultante:</b></td>
+                <td id="pdfValVidaMedia">0.00</td>
+                <td><b>Pago de Intereses:</b></td>
+                <td id="pdfValPagoInt">1 Mes(es)</td>
+            </tr>
+            <tr>
+                <td><b>Total Meses Proyectados:</b></td>
+                <td id="pdfValTotalPeriodos" colspan="3">0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="pdf-table">
+        <thead>
+            <tr>
+                <th># Mes</th>
+                <th>Fac Año</th>
+                <th>Año P</th>
+                <th>Fecha</th>
+                <th>Año</th>
+                <th>Saldo Inicial</th>
+                <th>Disposición</th>
+                <th>Amortización ($)</th>
+                <th>Interés ($)</th>
+                <th>Amort (%)</th>
+                <th>Saldo Final</th>
+            </tr>
+        </thead>
+        <tbody id="pdfTbody">
+        </tbody>
+    </table>
+</div>
+
+<!-- ==========================================================================
+     MOTOR DE CÁLCULO LINEAL Y EXPORTACIÓN (EXCELJS + HTML2PDF)
+     ========================================================================== -->
+<script>
+    // DÍAS FIJOS POR MES CALENDARIO (Enero=31, Febrero=28, Marzo=31, Abril=30, etc.)
+    const DIAS_POR_MES = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        calcularTablaAmortizacion();
+
+        const reveals = document.querySelectorAll('.ct-reveal');
+        if ('IntersectionObserver' in window) {
+            const obs = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('ct-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.06 });
+            reveals.forEach(el => obs.observe(el));
+        } else {
+            reveals.forEach(el => el.classList.add('ct-visible'));
+        }
+    });
+
+    function calcularYDesplazar() {
+        calcularTablaAmortizacion();
+        const sec = document.getElementById('seccion-calendario-lineal');
+        if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /**
+     * Obtiene la suma exacta de los días correspondientes al mes (o meses) del corte.
+     */
+    function obtenerDiasPeriodoCorte(mesCorte1a12, periodoMeses) {
+        let totalDias = 0;
+        const idxMesFinal = mesCorte1a12 - 1; // 0 = Enero, 11 = Diciembre
+        for (let i = 0; i < periodoMeses; i++) {
+            const idx = (idxMesFinal - i + 120) % 12;
+            totalDias += DIAS_POR_MES[idx];
+        }
+        return totalDias;
+    }
+
+    /**
+     * Crea una fecha sumando meses de forma segura sin desbordar si el día original es 29, 30 o 31.
+     */
+    function sumarMesesSeguro(anoBase, mesBase0a11, diaBase, mesesASumar) {
+        const fechaTemp = new Date(anoBase, mesBase0a11 + mesesASumar, 1);
+        const anoDestino = fechaTemp.getFullYear();
+        const mesDestino = fechaTemp.getMonth();
+        const ultimoDiaDelMes = new Date(anoDestino, mesDestino + 1, 0).getDate();
+        const diaFinal = Math.min(diaBase, ultimoDiaDelMes);
+        return new Date(anoDestino, mesDestino, diaFinal);
+    }
+
+    function calcularFracAno(fechaInicio, fechaFin) {
+        const diffTime = Math.abs(fechaFin - fechaInicio);
+        return diffTime / (1000 * 60 * 60 * 24 * 365.25);
+    }
+
+    function calcularTablaAmortizacion() {
+        const fechaInicialStr = document.getElementById('paramFechaInicial').value || '2026-08-01';
+        const deudaObjetivo = parseFloat(document.getElementById('paramDeudaObjetivo').value) || 0;
+        const plazoAnos = parseFloat(document.getElementById('paramPlazoAnos').value) || 0;
+        const periodoAmortMeses = Math.max(1, parseInt(document.getElementById('paramPeriodoAmort').value) || 1);
+        const mesesGracia = Math.max(0, parseInt(document.getElementById('paramPeriodosGracia').value) || 0);
+        const balloonPaymentPct = (parseFloat(document.getElementById('paramBalloonPayment').value) || 0) / 100;
+        const tasaInteres = (parseFloat(document.getElementById('paramTasaInteres').value) || 0) / 100;
+        const pagoInteresesMeses = Math.max(1, parseInt(document.getElementById('paramPagoIntereses').value) || 1);
+
+        const totalMeses = Math.round(plazoAnos * 12);
+        const totalPeriodosAmort = Math.round(totalMeses / periodoAmortMeses);
+        const periodosGraciaAmort = Math.floor(mesesGracia / periodoAmortMeses);
+        const periodosAmortTotales = Math.max(1, totalPeriodosAmort - periodosGraciaAmort);
+
+        const amortizacionPorcentajeBase = periodosAmortTotales > 0
+            ? (1 - balloonPaymentPct) / periodosAmortTotales
+            : 0;
+
+        const tbody = document.getElementById('tbodyAmortizacion');
+        tbody.innerHTML = '';
+
+        let saldoActual = deudaObjetivo;
+        let partesFecha = fechaInicialStr.split('-');
+        let anoBase = parseInt(partesFecha[0]);
+        let mesBase = parseInt(partesFecha[1]) - 1;
+        let diaBase = parseInt(partesFecha[2]);
+        let fechaBase = new Date(anoBase, mesBase, diaBase);
+
+        let sumaSaldoMult = 0;
+        let sumaAmortizacion = 0;
+        let sumaIntereses = 0;
+
+        // Fila 0: Disposición inicial
+        let row0 = document.createElement('tr');
+        row0.className = 'row-disposition';
+        row0.innerHTML = `
+            <td>0</td>
+            <td>0.00</td>
+            <td>0</td>
+            <td class="text-[#001391] font-extrabold">${formatearFecha(fechaBase)}</td>
+            <td>${fechaBase.getFullYear()}</td>
+            <td class="text-right">-</td>
+            <td class="text-right text-[#0F5C6E] font-extrabold">${formatearMoneda(deudaObjetivo)}</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+            <td class="text-right">0.0000%</td>
+            <td class="text-right font-extrabold text-[#070E46]">${formatearMoneda(deudaObjetivo)}</td>
+        `;
+        tbody.appendChild(row0);
+
+        for (let m = 1; m <= totalMeses; m++) {
+            let fechaMes = sumarMesesSeguro(anoBase, mesBase, diaBase, m);
+            let facAno = calcularFracAno(fechaBase, fechaMes);
+            let anoP = Math.ceil(m / 12);
+            let anoActual = fechaMes.getFullYear();
+            let mesCorte1a12 = fechaMes.getMonth() + 1;
+
+            let saldoInicial = saldoActual;
+
+            // CÁLCULO DE INTERESES
+            let montoInteres = 0;
+            let tocaPagoInteres = (m % pagoInteresesMeses === 0) || (m === totalMeses);
+
+            if (tocaPagoInteres && saldoInicial > 0) {
+                let diasDelMesCorte = obtenerDiasPeriodoCorte(mesCorte1a12, pagoInteresesMeses);
+                montoInteres = (saldoInicial * (tasaInteres / 360)) * diasDelMesCorte;
+            }
+
+            // CÁLCULO DE AMORTIZACIÓN LINEAL
+            let pctAmort = 0;
+            let amortizacionEfectiva = 0;
+            let tocaAmortizacion = (m % periodoAmortMeses === 0) || (m === totalMeses);
+            let numPeriodoAmortActual = Math.ceil(m / periodoAmortMeses);
+            let superoGracia = numPeriodoAmortActual > periodosGraciaAmort;
+
+            if (tocaAmortizacion && superoGracia && saldoInicial > 0) {
+                if (m === totalMeses) {
+                    pctAmort = amortizacionPorcentajeBase + balloonPaymentPct;
+                } else {
+                    pctAmort = amortizacionPorcentajeBase;
+                }
+                let montoAmort = deudaObjetivo * pctAmort;
+                amortizacionEfectiva = Math.min(montoAmort, saldoInicial);
+            }
+
+            let saldoFinal = Math.max(0, saldoInicial - amortizacionEfectiva);
+            saldoActual = saldoFinal;
+
+            sumaSaldoMult += saldoInicial;
+            sumaAmortizacion += amortizacionEfectiva;
+            sumaIntereses += montoInteres;
+
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="font-bold text-slate-600">${m}</td>
+                <td class="text-slate-600">${facAno.toFixed(4)}</td>
+                <td class="font-semibold text-slate-500">${anoP}</td>
+                <td class="text-[#001391] font-bold">${formatearFecha(fechaMes)}</td>
+                <td class="font-bold text-slate-700">${anoActual}</td>
+                <td class="text-right font-semibold text-[#070E46]">${formatearMoneda(saldoInicial)}</td>
+                <td class="text-right text-slate-400">-</td>
+                <td class="text-right font-extrabold ${amortizacionEfectiva > 0 ? 'text-[#001391] bg-[#F4F8FD]' : 'text-slate-400'}">${amortizacionEfectiva > 0 ? formatearMoneda(amortizacionEfectiva) : '-'}</td>
+                <td class="text-right font-semibold ${montoInteres > 0 ? 'text-[#B45309]' : 'text-slate-400'}">${montoInteres > 0 ? formatearMoneda(montoInteres) : '-'}</td>
+                <td class="text-right text-xs font-semibold text-slate-600">${pctAmort > 0 ? (pctAmort * 100).toFixed(4) + '%' : '0.0000%'}</td>
+                <td class="text-right font-extrabold text-[#070E46]">${formatearMoneda(saldoFinal)}</td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        let vidaMedia = (deudaObjetivo > 0 && sumaAmortizacion > 0) ? (sumaSaldoMult / deudaObjetivo) / 12 : 0;
+        const capitalAmortizado = deudaObjetivo - saldoActual;
+
+        document.getElementById('kpiVidaMedia').innerText = vidaMedia.toFixed(2);
+
+        document.getElementById('totalAmortizadoLabel').innerText = 'Total Amortizado: ' + formatearMoneda(capitalAmortizado);
+        document.getElementById('labelTotalFilas').innerText = `Filas calculadas: ${totalMeses}`;
+    }
+
+    function formatearMoneda(num) {
+        return '$' + Number(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatearFecha(date) {
+        let d = date.getDate();
+        let m = date.getMonth() + 1;
+        let y = date.getFullYear();
+        return `${d < 10 ? '0' + d : d}/${m < 10 ? '0' + m : m}/${y}`;
+    }
+
+    function notificarCalculo() {
+        Swal.fire({
+            title: '¡Tabla Calculada!',
+            text: 'La tabla de amortización lineal ha sido verificada y calculada correctamente.',
+            icon: 'success',
+            background: '#FFFFFF',
+            color: '#070E46',
+            confirmButtonColor: '#001391',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+
+    // --- FUNCIÓN DE EXPORTACIÓN A EXCEL CON EXCELJS ---
+    async function exportarExcel() {
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet('Amortización Lineal');
+
+        sheet.views = [{ showGridLines: true }];
+
+        // 1. TÍTULO EJECUTIVO
+        sheet.mergeCells('A1:K1');
+        const titleCell = sheet.getCell('A1');
+        titleCell.value = 'MODELO DE ESTRUCTURACIÓN DE DEUDA Y AMORTIZACIÓN LINEAL';
+        titleCell.font = { name: 'Calibri', size: 15, bold: true, color: { argb: 'FFFFFFFF' } };
+        titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF070E46' } };
+        titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+        sheet.getRow(1).height = 34;
+
+        // 2. OBTENER PARÁMETROS DE ENTRADA DESDE LA INTERFAZ
+        const fechaInicialRaw = document.getElementById('paramFechaInicial').value || '2026-08-01';
+        const partesF = fechaInicialRaw.split('-');
+        const fechaInicial = partesF.length === 3 ? `${partesF[2]}/${partesF[1]}/${partesF[0]}` : fechaInicialRaw;
+        const deudaObjetivo = parseFloat(document.getElementById('paramDeudaObjetivo').value) || 0;
+        const plazoAnos = parseFloat(document.getElementById('paramPlazoAnos').value) || 0;
+        const periodoAmort = parseInt(document.getElementById('paramPeriodoAmort').value) || 1;
+        const graciaMeses = parseInt(document.getElementById('paramPeriodosGracia').value) || 0;
+        const balloonPct = (parseFloat(document.getElementById('paramBalloonPayment').value) || 0) / 100;
+        const tasaInteres = (parseFloat(document.getElementById('paramTasaInteres').value) || 0) / 100;
+        const pagoInt = parseInt(document.getElementById('paramPagoIntereses').value) || 1;
+        const vidaMedia = parseFloat(document.getElementById('kpiVidaMedia').innerText) || 0;
+
+        // 3. SECCIÓN DE PARÁMETROS FINANCIEROS (RESUMEN)
+        sheet.mergeCells('A3:D3');
+        const paramHeader = sheet.getCell('A3');
+        paramHeader.value = 'PARÁMETROS DEL CRÉDITO';
+        paramHeader.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+        paramHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF001391' } };
+
+        const paramsData = [
+            ['Fecha Inicial:', fechaInicial, 'Periodo Amortización:', `${periodoAmort} Mes(es)`],
+            ['Deuda Objetivo:', deudaObjetivo, 'Periodos Gracia:', `${graciaMeses} Meses`],
+            ['Plazo (Años):', plazoAnos, 'Balloon Payment:', balloonPct],
+            ['Tasa Interés Anual:', tasaInteres, 'Vida Media Resultante:', vidaMedia],
+            ['Pago de Intereses:', `${pagoInt} Mes(es)`, '', '']
+        ];
+
+        paramsData.forEach((rowValues, rowIndex) => {
+            const rowNum = 4 + rowIndex;
+            const row = sheet.getRow(rowNum);
+
+            row.getCell(1).value = rowValues[0];
+            row.getCell(2).value = rowValues[1];
+            row.getCell(3).value = rowValues[2];
+            row.getCell(4).value = rowValues[3];
+
+            row.getCell(1).font = { bold: true };
+            row.getCell(3).font = { bold: true };
+
+            if (rowIndex === 0) row.getCell(2).alignment = { horizontal: 'left' };
+            if (rowIndex === 1) row.getCell(2).numFmt = '"$"#,##0.00';
+            if (rowIndex === 2) {
+                row.getCell(2).numFmt = '0.0';
+                if (rowValues[3] !== '') row.getCell(4).numFmt = '0.00%';
+            }
+            if (rowIndex === 3) {
+                row.getCell(2).numFmt = '0.00%';
+                row.getCell(4).numFmt = '0.00';
+            }
+
+            for (let col = 1; col <= 4; col++) {
+                const cell = row.getCell(col);
+                if (cell.value !== undefined && cell.value !== '') {
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
+                    cell.border = {
+                        top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                        left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                        bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                        right: { style: 'thin', color: { argb: 'FFCBD5E1' } }
+                    };
+                }
+            }
+        });
+
+        // 4. ENCABEZADOS DE LA TABLA PRINCIPAL
+        const startRow = 11;
+        const headers = [
+            '# Mes', 'Fac Año', 'Año P.', 'Fecha (DD/MM/AAAA)', 'Año',
+            'Saldo Inicial', 'Disposición Mn', 'Amortización ($)',
+            'Interés ($)', 'Amortización (%)', 'Saldo Final'
+        ];
+
+        const headerRow = sheet.getRow(startRow);
+        headerRow.height = 25;
+
+        headers.forEach((headerText, index) => {
+            const cell = headerRow.getCell(index + 1);
+            cell.value = headerText;
+            cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF001391' } };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.border = {
+                top: { style: 'medium', color: { argb: 'FF070E46' } },
+                bottom: { style: 'medium', color: { argb: 'FF070E46' } }
+            };
+        });
+
+        // 5. EXTRACCIÓN Y COPIA DE DATOS DESDE LA TABLA HTML
+        const rows = document.querySelectorAll('#tbodyAmortizacion tr');
+        let currentRowIdx = startRow + 1;
+
+        rows.forEach((tr, rIdx) => {
+            const row = sheet.getRow(currentRowIdx);
+            const tds = tr.querySelectorAll('td');
+
+            const isDispositionRow = tr.classList.contains('row-disposition');
+            const bgColor = isDispositionRow ? 'FFE6F4EA' : (rIdx % 2 === 0 ? 'FFF8FAFC' : 'FFFFFFFF');
+
+            tds.forEach((td, cIdx) => {
+                const cell = row.getCell(cIdx + 1);
+                let rawText = td.innerText.trim();
+
+                if (cIdx === 0 || cIdx === 2 || cIdx === 4) {
+                    cell.value = isNaN(rawText) ? rawText : parseInt(rawText);
+                    cell.alignment = { horizontal: 'center' };
+                } else if (cIdx === 1) {
+                    cell.value = parseFloat(rawText) || 0;
+                    cell.numFmt = '0.0000';
+                    cell.alignment = { horizontal: 'right' };
+                } else if (cIdx === 3) {
+                    cell.value = rawText;
+                    cell.alignment = { horizontal: 'center' };
+                } else if (cIdx === 9) {
+                    cell.value = (parseFloat(rawText.replace('%', '')) || 0) / 100;
+                    cell.numFmt = '0.0000%';
+                    cell.alignment = { horizontal: 'right' };
+                } else {
+                    if (rawText === '-' || rawText === '') {
+                        cell.value = '-';
+                        cell.alignment = { horizontal: 'center' };
+                    } else {
+                        let val = parseFloat(rawText.replace(/[^0-9.-]+/g, ''));
+                        cell.value = isNaN(val) ? rawText : val;
+                        cell.numFmt = '"$"#,##0.00';
+                        cell.alignment = { horizontal: 'right' };
+                    }
+                }
+
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgColor } };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+                    left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+                    bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+                    right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+                };
+                if (isDispositionRow) {
+                    cell.font = { bold: true };
+                }
+            });
+
+            currentRowIdx++;
+        });
+
+        // 6. AUTOAJUSTAR ANCHO DE COLUMNAS
+        sheet.columns.forEach(column => {
+            let maxLen = 12;
+            column.eachCell({ includeEmpty: true }, cell => {
+                if (cell.row > 2) {
+                    let valStr = cell.value ? cell.value.toString() : '';
+                    if (valStr.length > maxLen) maxLen = valStr.length;
+                }
+            });
+            column.width = maxLen + 3;
+        });
+
+        // 7. DESCARGAR EL ARCHIVO EXCEL (.XLSX)
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Estructuracion_Deuda_Amortizacion_${fechaInicialRaw}.xlsx`;
+        link.click();
+    }
+
+    // EXPORTAR A PDF CON FORMATO EJECUTIVO
+    function exportarPDF() {
+        document.getElementById('pdfFechaEmision').innerText = new Date().toLocaleDateString('es-ES');
+        document.getElementById('pdfValDeuda').innerText = formatearMoneda(parseFloat(document.getElementById('paramDeudaObjetivo').value) || 0);
+        document.getElementById('pdfValPlazo').innerText = (document.getElementById('paramPlazoAnos').value || '0') + ' Años';
+        document.getElementById('pdfValPeriodo').innerText = (document.getElementById('paramPeriodoAmort').value || '1') + ' Mes(es)';
+        document.getElementById('pdfValGracia').innerText = (document.getElementById('paramPeriodosGracia').value || '0') + ' Meses';
+        document.getElementById('pdfValTasa').innerText = (document.getElementById('paramTasaInteres').value || '0') + '%';
+        document.getElementById('pdfValBalloon').innerText = (document.getElementById('paramBalloonPayment').value || '0') + '%';
+        document.getElementById('pdfValVidaMedia').innerText = document.getElementById('kpiVidaMedia').innerText;
+        document.getElementById('pdfValPagoInt').innerText = (document.getElementById('paramPagoIntereses').value || '1') + ' Mes(es)';
+
+        const totalFilas = document.getElementById('labelTotalFilas').innerText.replace('Filas calculadas: ', '');
+        const elTotalPeriodos = document.getElementById('pdfValTotalPeriodos');
+        if (elTotalPeriodos) elTotalPeriodos.innerText = totalFilas;
+
+        const pdfTbody = document.getElementById('pdfTbody');
+        pdfTbody.innerHTML = document.getElementById('tbodyAmortizacion').innerHTML;
+
+        const elemento = document.getElementById('pdfPlantilla');
+        elemento.style.display = 'block';
+
+        const opciones = {
+            margin:       [0.3, 0.3, 0.3, 0.3],
+            filename:     'Reporte_Amortizacion_Lineal.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, backgroundColor: '#ffffff' },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf().set(opciones).from(elemento).save().then(() => {
+            elemento.style.display = 'none';
+        });
+    }
+
+    function abrirGoogleSheets() {
+        exportarExcel();
+        Swal.fire({
+            title: 'Archivo Excel Generado',
+            text: 'Se ha descargado el archivo .xlsx. Haz clic en "Ir a Google Sheets" y selecciona "Archivo > Importar" para cargarlo.',
+            icon: 'info',
+            background: '#FFFFFF',
+            color: '#070E46',
+            showCancelButton: true,
+            confirmButtonColor: '#001391',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Ir a Google Sheets',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.open('https://sheets.new', '_blank');
+            }
+        });
+    }
+</script>
+</body>
+</html>
